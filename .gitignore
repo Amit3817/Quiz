@@ -130,7 +130,7 @@ dist
 .pnp.*
 
 controller
-model
+model/quiz.js
 routes
 middleware
 
