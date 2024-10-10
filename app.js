@@ -1,6 +1,7 @@
 const express = require("express");
 const { default: mongoose } = require("mongoose");
 const cors = require("cors");
+const authRoutes=require("./routes/authRoutes")
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -21,7 +22,7 @@ mongoose
   });
 
 
-
+app.use(authRoutes);
 app.use("/", (req, res) => {
   res.json({ msg: "success" });
 });
