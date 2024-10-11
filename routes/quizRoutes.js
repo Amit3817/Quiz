@@ -7,6 +7,7 @@ const {
   getQuizzes,
   getQuizDetails,
   submitQuiz,
+  deleteQuiz
 } = require("../controller/quizController");
 
 
@@ -69,5 +70,6 @@ router.post(
   verifytoken,
   submitQuiz
 );
+router.delete('/quiz/:id',verifytoken, deleteQuiz);
 
 module.exports = router;

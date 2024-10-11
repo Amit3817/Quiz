@@ -41,7 +41,7 @@ const mail=async (req,res,next)=>{
         throw err;
       }
   }
-//  await send()
+ await send()
     
       const token=jwt.sign({email:emailId.toLowerCase()},process.env.secretkey,{expiresIn:"1d"});
       const otp2=await bcrypt.hash(otp,12);

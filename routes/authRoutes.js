@@ -13,7 +13,7 @@ const {
 
 const router = express.Router();
 
-router.post('/users/signup', [
+router.post('/signup', [
   body('email', 'Please enter a valid email')
     .normalizeEmail()
     .isEmail()
@@ -27,9 +27,10 @@ router.post('/users/signup', [
     .isLength({ min: 2 }),
 ], validation,signUp, mail);
 
-router.post('/users/login', [
+router.post('/login', [
   body('email', 'Please enter a valid email')
     .normalizeEmail()
+    .isEmail()
     .not()
     .isEmpty(),
   body('password', 'Please enter a valid password')
@@ -38,25 +39,26 @@ router.post('/users/login', [
     .isEmpty(),
 ],validation, logIn);
 
-router.post('/users/forgot-password', [
+router.post('/forgot-password', [
   body('email', 'Please enter a valid email')
     .normalizeEmail()
     .not()
     .isEmpty(),
 ], validation,forgotPassword, mail);
 
-router.post('/users/verify-otp', [
+router.post('/verify-otp', [
   body('otp', 'Please enter a valid OTP')
     .not()
     .isEmpty(),
 ],validation, verifytoken, otpVerify);
 
-router.put('/users/resend-otp', verifytoken, mail);
+router.put('/resend-otp', verifytoken, mail);
 
-router.put('/users/change-password', [
+router.put('/change-password', [
   body('newPassword', 'Please enter a valid password')
     .not()
     .isEmpty(),
 ],validation, verifytoken, changePassword);
+
 
 module.exports = router;

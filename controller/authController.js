@@ -13,12 +13,11 @@ const signUp = async (req, res, next) => {
     const old = await User.findOne({ email: email.toLowerCase() });
     if(old&&old.emailverify) 
       {
-        console.log(1)
-        return res.json("User already exists");
+        return res.status(400).json("User already exists");
       }
     else if (!old) {
       if (!checkPassword(password)) {
-        return res.json({
+        return res.status(400).json({
           success: false,
           msg: "Please enter a strong password",
         });
@@ -27,17 +26,16 @@ const signUp = async (req, res, next) => {
       const encpassword = await bcrypt.hash(password, 12);
 
       await User.create({
-        email: email.toLowerCase(),
+        email: email,
         password: encpassword,
         name: name,
-        type: type,
       });
       next();
     } else {
       if (!old.emailverify) {
         next();
       } else {
-        return res.json({ success: false, msg: "User already exists" });
+        return res.status(400).json({ success: false, msg: "User already exists" });
       }
     }
   } catch (error) {
@@ -48,22 +46,21 @@ const signUp = async (req, res, next) => {
 const logIn = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-
     const user = await User.findOne({ email: email.toLowerCase() });
-    if (!user) return res.json({ success: false, msg: "User not found" });
+    if (!user) return res.status(404).json({ success: false, msg: "User not found" });
     if (user.emailverify == true) {
       const cmp = await bcrypt.compare(password, user.password);
-      if (!cmp) return res.json({ success: false, msg: "Wrong password" });
+      if (!cmp) return res.status(401).json({ success: false, msg: "Wrong password" });
       const token = jwt.sign(
         { email: email.toLowerCase(), user: user._id},
         process.env.secretkey,
         { expiresIn: "1d" }
       );
       if (token) {
-        return res.json({ success: true, msg: `Welcome`, token });
+        return res.status(200).json({ success: true, msg: `Welcome`, token });
       }
     } else {
-      return res.json({ success: false, msg: "Email not verified" });
+      return res.status(403).json({ success: false, msg: "Email not verified" });
     }
   } catch (error) {
     next(error);
@@ -75,7 +72,7 @@ const forgotPassword = async (req, res, next) => {
     const email = req.body.email;
     const user = await User.findOne({ email: email.toLowerCase() });
     if (!user) {
-      return res.json({ success: "false", message: "User not found" });
+      return res.status(404).json({ success: "false", message: "User not found" });
     }
     const token = jwt.sign(
       { email: email.toLowerCase(), user: user._id },
@@ -104,10 +101,10 @@ const otpVerify = async (req, res, next) => {
         }
       );
       if (updated) {
-        return res.json({ success: true, msg: "OTP verified", token });
+        return res.status(200).json({ success: true, msg: "OTP verified", token });
       }
     }
-    return res.json({ success: false, msg: "Wrong OTP entered" });
+    return res.status(400).json({ success: false, msg: "Wrong OTP entered" });
   } catch (err) {
     next(err);
   }
@@ -118,7 +115,7 @@ const changePassword = async (req, res, next) => {
     const newpassword = req.body.newpassword;
 
     if (!checkPassword(newpassword)) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         msg: "Please enter a strong password",
       });
@@ -134,14 +131,14 @@ const changePassword = async (req, res, next) => {
       }
     );
     if (updated) {
-      return res.json({
+      return res.status(200).json({
         success: true,
         msg: "Password changed",
         token: user.token,
       });
     }
 
-    return res.json({ success: false, msg: "Password change failed" });
+    return res.status(400).json({ success: false, msg: "Password change failed" });
   } catch (err) {
     next(err);
   }
