@@ -22,7 +22,7 @@ mongoose
   });
 
 
-app.use(authRoutes);
+app.use('/auth',authRoutes);
 app.use("/", (req, res) => {
   res.json({ msg: "success" });
 });

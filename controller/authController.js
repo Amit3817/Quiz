@@ -44,7 +44,6 @@ const signUp = async (req, res, next) => {
       }
     }
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -59,7 +58,7 @@ const logIn = async (req, res, next) => {
       const cmp = await bcrypt.compare(password, user.password);
       if (!cmp) return res.json({ success: false, msg: "Wrong password" });
       const token = jwt.sign(
-        { email: email.toLowerCase(), user: user._id, type: user.type },
+        { email: email.toLowerCase(), user: user._id},
         process.env.secretkey,
         { expiresIn: "1d" }
       );
@@ -70,7 +69,6 @@ const logIn = async (req, res, next) => {
       return res.json({ success: false, msg: "Email not verified" });
     }
   } catch (error) {
-    console.log(error);
     next(error);
   }
 };
@@ -91,7 +89,6 @@ const forgotPassword = async (req, res, next) => {
       next();
     }
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
@@ -124,7 +121,6 @@ const otpVerify = async (req, res, next) => {
     }
     return res.json({ success: false, msg: "Wrong OTP entered" });
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };
@@ -159,7 +155,6 @@ const changePassword = async (req, res, next) => {
 
     return res.json({ success: false, msg: "Password change failed" });
   } catch (err) {
-    console.log(err);
     next(err);
   }
 };

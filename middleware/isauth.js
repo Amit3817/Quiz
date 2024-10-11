@@ -12,7 +12,7 @@ const verifytoken=async (req,res,next)=>{
                 return res.json({success:false,msg:"Invalid or expired token",msg2:err});
             }
       
-            const user=await User.findOne({email});
+            const user=await User.findOne({email:payload.email});
             req.user=user;
             next();
         });
