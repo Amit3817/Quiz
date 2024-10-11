@@ -1,16 +1,8 @@
 const Quiz = require("../model/quiz.js");
-const { validationResult } = require("express-validator");
 
 const createQuiz = async (req, res,next) => {
   try {
     const { title, questions } = req.body;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error("Validation failed.");
-      error.statusCode = 422;
-      error.data = errors.array();
-     return next(error);
-    }
     const quiz = new Quiz({ title, questions, createdBy: req.user.userId });
     await quiz.save();
    return res.status(201).json({ message: "Quiz created successfully" });
@@ -44,13 +36,6 @@ const submitQuiz = async (req, res,next) => {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
     const userAnswers = req.body.answers;
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      const error = new Error("Validation failed.");
-      error.statusCode = 422;
-      error.data = errors.array();
-      return next(error);
-    }
     let score = 0;
 
     quiz.questions.forEach((question, index) => {

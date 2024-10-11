@@ -4,7 +4,6 @@ const jwt=require("jsonwebtoken")
 const nodemailer=require('nodemailer')
 
 
-
 const mail=async (req,res,next)=>{
   try{
   const emailId=req.body.email||req.user.email;
@@ -36,19 +35,13 @@ const mail=async (req,res,next)=>{
          
          }
   
-         await transporter.sendMail(data,async(error,info)=>{
-          if(error){
-              throw new error;
-          }
-  
-         });
+         await transporter.sendMail(data);
       }
       catch(err){
-        console.log(err);
+        throw err;
       }
   }
- await send()
-  
+//  await send()
     
       const token=jwt.sign({email:emailId.toLowerCase()},process.env.secretkey,{expiresIn:"1d"});
       const otp2=await bcrypt.hash(otp,12);
@@ -66,7 +59,6 @@ const mail=async (req,res,next)=>{
   }
 catch(err)
 {      
-  console.log(err);
   console.log('mail not sent');
   next(err);
 }

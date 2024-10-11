@@ -34,5 +34,8 @@
     "validator": "^12.0.0"
   },
   "keywords": [],
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
 }

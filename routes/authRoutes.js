@@ -1,86 +1,62 @@
-const express=require("express");
-const { body }=require("express-validator");
-const verifytoken=require("../middleware/isauth.js");
-const mail=require("../middleware/mailer.js");
+const express = require("express");
+const { body } = require("express-validator");
+const verifytoken = require("../middleware/isauth.js");
+const validation=require("../middleware/validation")
+const mail = require("../middleware/mailer.js");
 const {
   signUp,
   logIn,
   otpVerify,
   changePassword,
   forgotPassword,
+} = require("../controller/authController.js");
 
-}=require("../controller/authController.js");
+const router = express.Router();
 
-
-
-const router=express.Router();
-
-router.post('/signup',
-[
-   body('email','Please enter a valid mail')
-   .normalizeEmail()
-   .not()
-    .isEmpty()
-
-,
-    body('password','Please enter valid password')
+router.post('/users/signup', [
+  body('email', 'Please enter a valid email')
+    .normalizeEmail()
+    .isEmail()
+    .not()
+    .isEmpty(),
+  body('password', 'Please enter a valid password')
     .trim()
-    .isLength({min:8}),
-
-    body('name','Please enter valid name')
+    .isLength({ min: 8 }),
+  body('name', 'Please enter a valid name')
     .trim()
-    .isLength({min:2})
+    .isLength({ min: 2 }),
+], validation,signUp, mail);
 
-],signUp,mail);
-
-router.post('/login',
-[
-  body('email','Please enter a valid mail')
-  .normalizeEmail()
-  .not()
-   .isEmpty()
-
-,
-   body('password','Please enter valid password')
-   .trim()
-  .not()
-  .isEmpty()
-],logIn);
-  
-
-  router.post('/forgotpassword',
-  [
-    body('email','Please enter a valid mail')
+router.post('/users/login', [
+  body('email', 'Please enter a valid email')
     .normalizeEmail()
     .not()
-     .isEmpty()
-  ],forgotPassword,mail);
-
-
-
-  router.post('/otpverify',
-  [
-
-
-    body('otp','Please enter a valid otp')
+    .isEmpty(),
+  body('password', 'Please enter a valid password')
+    .trim()
     .not()
-     .isEmpty()
+    .isEmpty(),
+],validation, logIn);
 
-
-  ],verifytoken,otpVerify);
-
-
-  router.put('/resendotp',verifytoken,mail);
-
-
-  router.put('/changepassword',
-  [
-    body('newpassword','Please enter a valid mail')
+router.post('/users/forgot-password', [
+  body('email', 'Please enter a valid email')
+    .normalizeEmail()
     .not()
-     .isEmpty(),
-  ],verifytoken,changePassword);
+    .isEmpty(),
+], validation,forgotPassword, mail);
 
-    
+router.post('/users/verify-otp', [
+  body('otp', 'Please enter a valid OTP')
+    .not()
+    .isEmpty(),
+],validation, verifytoken, otpVerify);
 
-module.exports=router;
+router.put('/users/resend-otp', verifytoken, mail);
 
+router.put('/users/change-password', [
+  body('newPassword', 'Please enter a valid password')
+    .not()
+    .isEmpty(),
+],validation, verifytoken, changePassword);
+
+module.exports = router;

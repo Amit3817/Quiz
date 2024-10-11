@@ -11,8 +11,8 @@ const verifytoken=async (req,res,next)=>{
             if(err){
                 return res.json({success:false,msg:"Invalid or expired token",msg2:err});
             }
-      
             const user=await User.findOne({email:payload.email});
+            if (!user) return res.json({ success: false, msg: "User does not exists" });
             req.user=user;
             next();
         });
