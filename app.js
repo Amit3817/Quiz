@@ -2,6 +2,7 @@ const express = require("express");
 const { default: mongoose } = require("mongoose");
 const cors = require("cors");
 const authRoutes=require("./routes/authRoutes")
+const quizRoutes=require('./routes/quizRoutes')
 
 const dotenv = require("dotenv");
 dotenv.config();
@@ -22,9 +23,23 @@ mongoose
   });
 
 
+  
+
 app.use('/auth',authRoutes);
+app.use('/quiz',quizRoutes);
 app.use("/", (req, res) => {
   res.json({ msg: "success" });
+});
+
+app.use((req, res, next) => {
+  const excludedRoutes = ["/auth/resendotp", "/quiz/"]; // Adjust these paths as needed
+
+  if (excludedRoutes.includes(req.path)) {
+    return next(); // Skip validation for these routes
+  }
+  
+  // Apply validation to all other routes
+  return globalValidationMiddleware(req, res, next);
 });
 
 app.use((error, req, res, next) => {

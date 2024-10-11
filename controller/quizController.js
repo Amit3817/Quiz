@@ -1,7 +1,7 @@
-const Quiz = require("../models/quiz.js");
+const Quiz = require("../model/quiz.js");
 const { validationResult } = require("express-validator");
 
-const createQuiz = async (req, res) => {
+const createQuiz = async (req, res,next) => {
   try {
     const { title, questions } = req.body;
     const errors = validationResult(req);
@@ -9,37 +9,37 @@ const createQuiz = async (req, res) => {
       const error = new Error("Validation failed.");
       error.statusCode = 422;
       error.data = errors.array();
-      next(error);
+     return next(error);
     }
     const quiz = new Quiz({ title, questions, createdBy: req.user.userId });
     await quiz.save();
-    res.status(201).json({ message: "Quiz created successfully" });
+   return res.status(201).json({ message: "Quiz created successfully" });
   } catch (error) {
     next(error);
   }
 };
 
-const getQuizzes = async (req, res) => {
+const getQuizzes = async (req, res,next) => {
   try {
     const quizzes = await Quiz.find();
     if (!quizzes) return res.status(404).json({ message: "No Quiz found" });
-    res.json(quizzes);
+    return res.json(quizzes);
   } catch (err) {
     next(err);
   }
 };
 
-const getQuizDetails = async (req, res) => {
+const getQuizDetails = async (req, res,next) => {
   try {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
-    res.json(quiz);
+   return res.json(quiz);
   } catch (err) {
     next(err);
   }
 };
 
-const submitQuiz = async (req, res) => {
+const submitQuiz = async (req, res,next) => {
   try {
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ message: "Quiz not found" });
@@ -49,7 +49,7 @@ const submitQuiz = async (req, res) => {
       const error = new Error("Validation failed.");
       error.statusCode = 422;
       error.data = errors.array();
-      next(error);
+      return next(error);
     }
     let score = 0;
 

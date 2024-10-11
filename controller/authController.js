@@ -16,7 +16,7 @@ const signUp = async (req, res, next) => {
       const error = new Error("Validation failed.");
       error.statusCode = 422;
       error.data = errors.array();
-      next(error);
+     return next(error);
     }
     const old = await User.findOne({ email: email.toLowerCase() });
     if (!old) {

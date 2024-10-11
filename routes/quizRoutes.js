@@ -1,12 +1,13 @@
+const express=require('express')
 const { body, param, validationResult } = require("express-validator");
-const verifytoken  = require("../middleware/isauth.js/verifytoken");
+const verifytoken  = require("../middleware/isauth.js");
 const router = express.Router();
 const {
   createQuiz,
   getQuizzes,
   getQuizDetails,
   submitQuiz,
-} = require("../controllers/quizController");
+} = require("../controller/quizController");
 
 
 router.post(
@@ -19,7 +20,7 @@ router.post(
       .notEmpty()
       .withMessage("Questions are required"),
 
-    body("questions.*.text")
+    body("questions.*.questionText")
       .isString()
       .notEmpty()
       .withMessage("Question text is required"),
